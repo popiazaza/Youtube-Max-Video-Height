@@ -46,7 +46,6 @@ function toggleHeader(){
 }
 
 function hotkeys(e){
-  console.log(e.code);
   if(e.code === 'Tab'){
     document.getElementById('guide-button').click();
   } else if (e.code === 'Escape'){

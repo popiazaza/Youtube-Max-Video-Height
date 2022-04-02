@@ -15,6 +15,7 @@ A userscript to maximize height of youtube media player, so you can enjoy almost
 - Add a button in top bar to pinned the top bar.
 - Add sidebar menu hotkey.
 - Hide top bar and disable user script on page change.
+- Add options and settings.
 
 ## License
 MIT

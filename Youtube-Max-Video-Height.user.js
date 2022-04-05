@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name        Youtube Max Height
 // @namespace   Youtube Max Height
-// @match       https://*.youtube.com/watch
+// @match       https://*.youtube.com/*
 // @grant       none
-// @version     0.1
+// @version     0.2
 // @author      popiazaza
 // @home-url    https://github.com/popiazaza/Youtube-Max-Video-Height
 // @homepageURL https://github.com/popiazaza/Youtube-Max-Video-Height
@@ -17,7 +17,7 @@ ytd-watch-flexy[theater] #player-theater-container.ytd-watch-flexy, ytd-watch-fl
   max-height: calc(100vh);
 }
 #masthead-container.ytd-app {
-  visibility: hidden;
+  opacity: 0;
 }
 #page-manager.ytd-app {
   margin-top: 0;
@@ -27,20 +27,24 @@ ytd-watch-flexy[theater] #player-theater-container.ytd-watch-flexy, ytd-watch-fl
 (function(){
   const mastheadContainer = document.getElementById("masthead-container");
   const pageManager = document.getElementById("page-manager");
-  mastheadContainer.style.visibility = 'hidden';
+  const playerContainer = document.getElementById("player-container");
+  const header = document.querySelector('#masthead-container #container');
+  mastheadContainer.style.opacity = 0;
   pageManager.style.marginTop = 0;
-  document.onkeydown = hotkeys;
+  document.onkeydown = hotkeys;  
+  mastheadContainer.addEventListener('mouseover', function(){toggleHeader(1);}, true);
+  mastheadContainer.addEventListener('mouseout', function(){toggleHeader(2);}, true);
 })();
 
-function toggleHeader(){
+function toggleHeader(mouseover = 0){
   const mastheadContainer = document.getElementById("masthead-container");
   const pageManager = document.getElementById("page-manager");
-  if(mastheadContainer.style.visibility === 'hidden'){
-    mastheadContainer.style.visibility = 'unset';
+  if(mouseover === 1 || mastheadContainer.style.opacity === 0){
+    mastheadContainer.style.opacity = 1;
     pageManager.style.marginTop = 'var(--ytd-masthead-height,var(--ytd-toolbar-height))';
     document.querySelector('#search-input input').focus();
-  } else {
-    mastheadContainer.style.visibility = 'hidden';
+  } else if (mouseover === 2 || mastheadContainer.style.opacity === 1) {
+    mastheadContainer.style.opacity = 0;
     pageManager.style.marginTop = 0;
   }
 }

@@ -3,6 +3,7 @@ A userscript to maximize height of youtube media player, so you can enjoy almost
 - Hide top bar (the search bar). 
 - Maximize video player height to 100vh (full browser height).
 - Press <kbd>Esc</kbd> to toggle top bar.
+- Hover mouse over hidden top bar to show the top bar.
 - Press <kbd>Tab</kbd> to toggle side bar.
 - Recommended to use with [YouTube Live Filled Up View](https://greasyfork.org/en/scripts/394945-youtube-live-filled-up-view) for full experience.
 

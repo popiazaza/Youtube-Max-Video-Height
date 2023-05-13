@@ -3,7 +3,7 @@
 // @namespace   Youtube Max Height
 // @match       https://*.youtube.com/*
 // @grant       none
-// @version     0.2
+// @version     0.3
 // @author      popiazaza
 // @home-url    https://github.com/popiazaza/Youtube-Max-Video-Height
 // @homepageURL https://github.com/popiazaza/Youtube-Max-Video-Height
@@ -24,35 +24,61 @@ ytd-watch-flexy[theater] #player-theater-container.ytd-watch-flexy, ytd-watch-fl
 }
 `);
 
-(function(){
+let pressEsc = false;
+
+(function () {
   const mastheadContainer = document.getElementById("masthead-container");
   const pageManager = document.getElementById("page-manager");
   const playerContainer = document.getElementById("player-container");
-  const header = document.querySelector('#masthead-container #container');
+  const header = document.querySelector("#masthead-container #container");
   mastheadContainer.style.opacity = 0;
   pageManager.style.marginTop = 0;
-  document.onkeydown = hotkeys;  
-  mastheadContainer.addEventListener('mouseover', function(){toggleHeader(1);}, true);
-  mastheadContainer.addEventListener('mouseout', function(){toggleHeader(2);}, true);
+  document.onkeydown = hotkeys;
+  mastheadContainer.addEventListener(
+    "mouseover",
+    function () {
+      toggleHeader(1);
+    },
+    true
+  );
+  mastheadContainer.addEventListener(
+    "mouseout",
+    function () {
+      toggleHeader(2);
+    },
+    true
+  );
 })();
 
-function toggleHeader(mouseover = 0){
+function toggleHeader(mouseover = 0) {
   const mastheadContainer = document.getElementById("masthead-container");
   const pageManager = document.getElementById("page-manager");
-  if(mouseover === 1 || mastheadContainer.style.opacity === 0){
+  if (mouseover === 1 || mastheadContainer.style.opacity === 0) {
     mastheadContainer.style.opacity = 1;
-    pageManager.style.marginTop = 'var(--ytd-masthead-height,var(--ytd-toolbar-height))';
-    document.querySelector('#search-input input').focus();
-  } else if (mouseover === 2 || mastheadContainer.style.opacity === 1) {
+    pageManager.style.marginTop =
+      "var(--ytd-masthead-height,var(--ytd-toolbar-height))";
+    document.querySelector("#search-input input").focus();
+  } else if (
+    !pressEsc &&
+    (mouseover === 2 || mastheadContainer.style.opacity === 1)
+  ) {
     mastheadContainer.style.opacity = 0;
     pageManager.style.marginTop = 0;
+    for (let element of Array.from(document.querySelectorAll(".gstl_50"))) {
+      element.style.display = "none";
+    }
   }
 }
 
-function hotkeys(e){
-  if(e.code === 'Tab'){
-    document.getElementById('guide-button').click();
-  } else if (e.code === 'Escape'){
-    toggleHeader();
+function hotkeys(e) {
+  if (e.code === "Tab") {
+    document.getElementById("guide-button").click();
+  } else if (e.code === "Escape") {
+    pressEsc = !pressEsc;
+    if (pressEsc) {
+      toggleHeader(1);
+    } else {
+      toggleHeader(2);
+    }
   }
 }

@@ -3,7 +3,7 @@
 // @namespace   Youtube Max Height
 // @match       https://*.youtube.com/*
 // @grant       none
-// @version     0.4
+// @version     0.5
 // @author      popiazaza
 // @home-url    https://github.com/popiazaza/Youtube-Max-Video-Height
 // @homepageURL https://github.com/popiazaza/Youtube-Max-Video-Height
@@ -51,7 +51,7 @@ let timeoutMouseout;
   );
   // Todo: fix searchRec
   const searchRec = document.querySelector(".sbdd_a");
-  if (!searchRec) {
+  if (searchRec) {
     searchRec.addEventListener(
       "mouseover",
       function () {
@@ -68,6 +68,23 @@ let timeoutMouseout;
       true
     );
   }
+
+  let previousUrl;
+
+  const observer = new MutationObserver(() => {
+    if (window.location.href !== previousUrl) {
+      if (window.location.pathname.startsWith("/watch")) {
+        toggleHeader(2);
+      } else {
+        toggleHeader(1);
+      }
+      previousUrl = window.location.href;
+    }
+  });
+
+  const config = { subtree: true, childList: true };
+
+  observer.observe(document, config);
 })();
 
 function toggleHeader(mouseover = 0) {

@@ -3,7 +3,7 @@
 // @namespace   Youtube Max Height
 // @match       https://*.youtube.com/*
 // @grant       none
-// @version     0.5
+// @version     0.6
 // @author      popiazaza
 // @home-url    https://github.com/popiazaza/Youtube-Max-Video-Height
 // @homepageURL https://github.com/popiazaza/Youtube-Max-Video-Height
@@ -24,8 +24,9 @@ ytd-watch-flexy[theater] #player-theater-container.ytd-watch-flexy, ytd-watch-fl
 }
 `);
 
-let pressEsc = false;
+let pinnedTopBar = false;
 let timeoutMouseout;
+// let searchRecRetry = 0;
 
 (function () {
   const mastheadContainer = document.getElementById("masthead-container");
@@ -45,37 +46,21 @@ let timeoutMouseout;
   mastheadContainer.addEventListener(
     "mouseout",
     function () {
-      timeoutMouseout = setTimeout(toggleHeader, 1500, 2);
+      timeoutMouseout = setTimeout(toggleHeader, 1000, 2);
     },
     true
   );
-  // Todo: fix searchRec
-  const searchRec = document.querySelector(".sbdd_a");
-  if (searchRec) {
-    searchRec.addEventListener(
-      "mouseover",
-      function () {
-        clearTimeout(timeoutMouseout);
-        toggleHeader(1);
-      },
-      true
-    );
-    searchRec.addEventListener(
-      "mouseout",
-      function () {
-        timeoutMouseout = setTimeout(toggleHeader, 1500, 2);
-      },
-      true
-    );
-  }
+  findSearchRec();
 
   let previousUrl;
 
   const observer = new MutationObserver(() => {
     if (window.location.href !== previousUrl) {
       if (window.location.pathname.startsWith("/watch")) {
+        pinnedTopBar = false;
         toggleHeader(2);
       } else {
+        pinnedTopBar = true;
         toggleHeader(1);
       }
       previousUrl = window.location.href;
@@ -96,7 +81,7 @@ function toggleHeader(mouseover = 0) {
       "var(--ytd-masthead-height,var(--ytd-toolbar-height))";
     document.querySelector("#search-input input").focus();
   } else if (
-    !pressEsc &&
+    !pinnedTopBar &&
     (mouseover === 2 || mastheadContainer.style.opacity === 1)
   ) {
     mastheadContainer.style.opacity = 0;
@@ -111,11 +96,37 @@ function hotkeys(e) {
   if (e.code === "Tab") {
     document.getElementById("guide-button").click();
   } else if (e.code === "Escape") {
-    pressEsc = !pressEsc;
-    if (pressEsc) {
+    pinnedTopBar = !pinnedTopBar;
+    if (pinnedTopBar) {
       toggleHeader(1);
     } else {
       toggleHeader(2);
     }
+  }
+}
+
+function findSearchRec() {
+  const searchRec = document.querySelector(".sbdd_a");
+  if (searchRec) {
+    searchRec.addEventListener(
+      "mouseover",
+      function () {
+        clearTimeout(timeoutMouseout);
+        toggleHeader(1);
+      },
+      true
+    );
+    searchRec.addEventListener(
+      "mouseout",
+      function () {
+        timeoutMouseout = setTimeout(toggleHeader, 1000, 2);
+      },
+      true
+    );
+  } else {
+    // searchRecRetry++;
+    // if (searchRecRetry < 1000) {
+      setTimeout(findSearchRec, 1000);
+    // }
   }
 }

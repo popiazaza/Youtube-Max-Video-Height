@@ -3,7 +3,7 @@
 // @namespace   Youtube Max Height
 // @match       https://*.youtube.com/*
 // @grant       none
-// @version     0.7
+// @version     0.8
 // @author      popiazaza
 // @home-url    https://github.com/popiazaza/Youtube-Max-Video-Height
 // @homepageURL https://github.com/popiazaza/Youtube-Max-Video-Height
@@ -31,7 +31,7 @@ let timeoutMouseout;
 (function () {
   const mastheadContainer = document.getElementById("masthead-container");
   const pageManager = document.getElementById("page-manager");
-  mastheadContainer.style.transition = "opacity 0.5s";
+  mastheadContainer.style.transition = "opacity 0.2s";
   mastheadContainer.style.opacity = 0;
   pageManager.style.marginTop = 0;
   document.onkeydown = hotkeys;
@@ -46,7 +46,7 @@ let timeoutMouseout;
   mastheadContainer.addEventListener(
     "mouseout",
     function () {
-      timeoutMouseout = setTimeout(toggleHeader, 1000, 2);
+      timeoutMouseout = setTimeout(toggleHeader, 500, 2);
     },
     true
   );
@@ -119,14 +119,11 @@ function findSearchRec() {
     searchRec.addEventListener(
       "mouseout",
       function () {
-        timeoutMouseout = setTimeout(toggleHeader, 1000, 2);
+        timeoutMouseout = setTimeout(toggleHeader, 500, 2);
       },
       true
     );
   } else {
-    // searchRecRetry++;
-    // if (searchRecRetry < 1000) {
-      setTimeout(findSearchRec, 1000);
-    // }
+    setTimeout(findSearchRec, 1000);
   }
 }

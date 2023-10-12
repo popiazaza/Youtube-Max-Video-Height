@@ -3,7 +3,7 @@
 // @namespace   Youtube Max Height
 // @match       https://*.youtube.com/*
 // @grant       none
-// @version     0.8.1
+// @version     0.9.1
 // @author      popiazaza
 // @home-url    https://github.com/popiazaza/Youtube-Max-Video-Height
 // @homepageURL https://github.com/popiazaza/Youtube-Max-Video-Height
@@ -26,7 +26,6 @@ ytd-watch-flexy[theater] #player-wide-container.ytd-watch-flexy, ytd-watch-flexy
 
 let pinnedTopBar = false;
 let timeoutMouseout;
-// let searchRecRetry = 0;
 
 (function () {
   const mastheadContainer = document.getElementById("masthead-container");
@@ -50,7 +49,6 @@ let timeoutMouseout;
     },
     true
   );
-  findSearchRec();
 
   let previousUrl;
 
@@ -79,7 +77,6 @@ function toggleHeader(mouseover = 0) {
     mastheadContainer.style.opacity = 1;
     pageManager.style.marginTop =
       "var(--ytd-masthead-height,var(--ytd-toolbar-height))";
-    document.querySelector("#search-input input").focus();
   } else if (
     !pinnedTopBar &&
     (mouseover === 2 || mastheadContainer.style.opacity === 1)
@@ -102,28 +99,5 @@ function hotkeys(e) {
     } else {
       toggleHeader(2);
     }
-  }
-}
-
-function findSearchRec() {
-  const searchRec = document.querySelector(".sbdd_a");
-  if (searchRec) {
-    searchRec.addEventListener(
-      "mouseover",
-      function () {
-        clearTimeout(timeoutMouseout);
-        toggleHeader(1);
-      },
-      true
-    );
-    searchRec.addEventListener(
-      "mouseout",
-      function () {
-        timeoutMouseout = setTimeout(toggleHeader, 500, 2);
-      },
-      true
-    );
-  } else {
-    setTimeout(findSearchRec, 1000);
   }
 }

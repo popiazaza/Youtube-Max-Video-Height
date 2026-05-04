@@ -2,8 +2,7 @@
 // @name        Youtube Max Height
 // @namespace   Youtube Max Height
 // @match       https://*.youtube.com/*
-// @grant       none
-// @version     0.9.1
+// @version     0.9.2
 // @author      popiazaza
 // @home-url    https://github.com/popiazaza/Youtube-Max-Video-Height
 // @homepageURL https://github.com/popiazaza/Youtube-Max-Video-Height

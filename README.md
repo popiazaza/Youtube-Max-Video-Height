@@ -2,7 +2,7 @@
 A userscript to maximize height of youtube media player, so you can enjoy almost fullscreen-like video.
 - Hide top bar (the search bar). 
 - Maximize video player height to 100vh (full browser height).
-- Press <kbd>Esc</kbd> to toggle top bar.
+- Press <kbd>Esc</kbd> to exit search mode or toggle the top bar.
 - Hover mouse over hidden top bar to show it; it stays visible while the cursor is near the top of the page.
 - Type at least two letters within 150ms to open the search bar and begin searching immediately.
 - Press <kbd>Tab</kbd> to toggle side bar.

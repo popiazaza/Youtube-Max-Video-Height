@@ -2,7 +2,7 @@
 // @name        Youtube Max Height
 // @namespace   Youtube Max Height
 // @match       https://*.youtube.com/*
-// @version     0.9.3
+// @version     1.0.0
 // @author      popiazaza
 // @home-url    https://github.com/popiazaza/Youtube-Max-Video-Height
 // @homepageURL https://github.com/popiazaza/Youtube-Max-Video-Height
@@ -32,8 +32,10 @@ let searchTypingStartedAt = 0;
 let searchTypingTimeout;
 let pendingSearchKeys = [];
 let searchMode = false;
+let emptySearchTimeout;
 const searchTypingWindow = 150;
 const searchTypingCharacterCount = 2;
+const emptySearchTimeoutDuration = 2000;
 
 (function () {
   const mastheadContainer = document.getElementById("masthead-container");
@@ -79,12 +81,21 @@ const searchTypingCharacterCount = 2;
   document.addEventListener(
     "click",
     function (event) {
-      if (
-        searchMode &&
+      const clickedEditable =
         event.target &&
-        !event.target.closest("input, textarea, [contenteditable='true']")
-      ) {
+        typeof event.target.closest === "function" &&
+        event.target.closest("input, textarea, [contenteditable='true']");
+      if (searchMode && !clickedEditable) {
         finishSearchMode();
+      }
+    },
+    true
+  );
+  document.addEventListener(
+    "input",
+    function (event) {
+      if (searchMode && isSearchInput(event.target)) {
+        scheduleEmptySearchExit();
       }
     },
     true
@@ -132,6 +143,12 @@ function scheduleHeaderHide() {
 
 function detectSearchTyping(event) {
   if (!event.isTrusted) {
+    return;
+  }
+  if (searchMode && event.code === "Escape") {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    finishSearchMode(true);
     return;
   }
   if (searchMode && event.code === "Enter" && isEditableTarget(event.target)) {
@@ -234,15 +251,49 @@ function isEditableTarget(target) {
   );
 }
 
+function isSearchInput(target) {
+  return (
+    target &&
+    typeof target.matches === "function" &&
+    target.matches(
+      "ytd-searchbox input#search, #search-input input, input[name='search_query']"
+    )
+  );
+}
+
+function getSearchInput() {
+  return document.querySelector(
+    "ytd-searchbox input#search, #search-input input, input[name='search_query']"
+  );
+}
+
+function scheduleEmptySearchExit() {
+  clearTimeout(emptySearchTimeout);
+  emptySearchTimeout = undefined;
+  const searchInput = getSearchInput();
+  if (!searchMode || !searchInput || searchInput.value.trim() !== "") {
+    return;
+  }
+  emptySearchTimeout = setTimeout(function () {
+    emptySearchTimeout = undefined;
+    const currentSearchInput = getSearchInput();
+    if (
+      searchMode &&
+      currentSearchInput &&
+      currentSearchInput.value.trim() === ""
+    ) {
+      finishSearchMode();
+    }
+  }, emptySearchTimeoutDuration);
+}
+
 function startSearchMode(searchText) {
   searchMode = true;
   clearTimeout(timeoutMouseout);
   timeoutMouseout = undefined;
   toggleHeader(1);
 
-  const searchInput = document.querySelector(
-    "ytd-searchbox input#search, #search-input input, input[name='search_query']"
-  );
+  const searchInput = getSearchInput();
   if (!searchInput) {
     return;
   }
@@ -251,13 +302,23 @@ function startSearchMode(searchText) {
   searchInput.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
-function finishSearchMode() {
+function finishSearchMode(clearInput = false) {
   if (!searchMode) {
     return;
   }
   searchMode = false;
   clearTimeout(timeoutMouseout);
   timeoutMouseout = undefined;
+  clearTimeout(emptySearchTimeout);
+  emptySearchTimeout = undefined;
+  const searchInput = getSearchInput();
+  if (searchInput) {
+    if (clearInput) {
+      searchInput.value = "";
+      searchInput.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+    searchInput.blur();
+  }
   toggleHeader(2);
 }
 
@@ -284,6 +345,10 @@ function hotkeys(e) {
   if (e.code === "Tab") {
     document.getElementById("guide-button").click();
   } else if (e.code === "Escape") {
+    if (searchMode) {
+      finishSearchMode(true);
+      return;
+    }
     searchMode = false;
     pinnedTopBar = !pinnedTopBar;
     if (pinnedTopBar) {

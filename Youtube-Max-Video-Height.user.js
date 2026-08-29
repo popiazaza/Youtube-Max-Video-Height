@@ -2,7 +2,7 @@
 // @name        Youtube Max Height
 // @namespace   Youtube Max Height
 // @match       https://*.youtube.com/*
-// @version     0.9.2
+// @version     0.9.3
 // @author      popiazaza
 // @home-url    https://github.com/popiazaza/Youtube-Max-Video-Height
 // @homepageURL https://github.com/popiazaza/Youtube-Max-Video-Height
@@ -25,6 +25,8 @@ ytd-watch-flexy[theater] #player-wide-container.ytd-watch-flexy, ytd-watch-flexy
 
 let pinnedTopBar = false;
 let timeoutMouseout;
+let lastMouseY = 0;
+const headerHoverZoneMultiplier = 3;
 
 (function () {
   const mastheadContainer = document.getElementById("masthead-container");
@@ -37,14 +39,32 @@ let timeoutMouseout;
     "mouseover",
     function () {
       clearTimeout(timeoutMouseout);
+      timeoutMouseout = undefined;
       toggleHeader(1);
     },
     true
   );
   mastheadContainer.addEventListener(
     "mouseout",
-    function () {
-      timeoutMouseout = setTimeout(toggleHeader, 500, 2);
+    function (event) {
+      lastMouseY = event.clientY;
+      scheduleHeaderHide();
+    },
+    true
+  );
+  document.addEventListener(
+    "mousemove",
+    function (event) {
+      lastMouseY = event.clientY;
+      if (pinnedTopBar || mastheadContainer.style.opacity !== "1") {
+        return;
+      }
+      if (event.clientY <= getHeaderHoverBoundary(mastheadContainer)) {
+        clearTimeout(timeoutMouseout);
+        timeoutMouseout = undefined;
+      } else {
+        scheduleHeaderHide();
+      }
     },
     true
   );
@@ -68,6 +88,25 @@ let timeoutMouseout;
 
   observer.observe(document, config);
 })();
+
+function getHeaderHoverBoundary(mastheadContainer) {
+  const mastheadRect = mastheadContainer.getBoundingClientRect();
+  return mastheadRect.top + mastheadRect.height * headerHoverZoneMultiplier;
+}
+
+function scheduleHeaderHide() {
+  clearTimeout(timeoutMouseout);
+  timeoutMouseout = setTimeout(function () {
+    timeoutMouseout = undefined;
+    const mastheadContainer = document.getElementById("masthead-container");
+    if (
+      !pinnedTopBar &&
+      lastMouseY > getHeaderHoverBoundary(mastheadContainer)
+    ) {
+      toggleHeader(2);
+    }
+  }, 500);
+}
 
 function toggleHeader(mouseover = 0) {
   const mastheadContainer = document.getElementById("masthead-container");
